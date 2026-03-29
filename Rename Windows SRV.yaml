@@ -1,6 +1,6 @@
 ---
 - name: Rename Windows Server
-  hosts: windows
+  hosts: SRV2K19
   tasks:
     - name: Set new computer name
       ansible.windows.win_hostname:
