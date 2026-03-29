@@ -4,7 +4,7 @@
   tasks:
     - name: Set new computer name
       ansible.windows.win_hostname:
-        name: test
+        name: SRV-DC01
       register: res
 
     - name: Reboot if name changed
