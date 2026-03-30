@@ -1,0 +1,19 @@
+---
+- name: Update Windows Server 2019
+  hosts: SRV2K19
+  gather_facts: no
+  tasks:
+    - name: Install all critical and security updates
+      ansible.windows.win_updates:
+        category_names:
+          - CriticalUpdates
+          - SecurityUpdates
+          - UpdateRollups
+        state: installed
+        reboot: yes
+        reboot_timeout: 1200  # Optional: Wait up to 20 mins for reboot
+      register: update_result
+
+    - name: Display update results
+      ansible.builtin.debug:
+        var: update_result
