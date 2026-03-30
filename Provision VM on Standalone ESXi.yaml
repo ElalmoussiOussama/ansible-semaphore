@@ -1,0 +1,40 @@
+---
+- name: Provision VM on Standalone ESXi
+  hosts: localhost
+  gather_facts: no
+  vars:
+    esxi_host: "192.168.153.1610"
+    esxi_user: "root"
+    esxi_pass: "@dminp200*"
+    vm_name: "VM-01"
+    datastore: "datastore1"  # Verify this name in ESXi Storage tab
+    network_name: "VM Network"
+  
+  tasks:
+    - name: Create Virtual Machine
+      community.vmware.vmware_guest:
+        hostname: "{{ esxi_host }}"
+        username: "{{ esxi_user }}"
+        password: "{{ esxi_pass }}"
+        validate_certs: no
+        datacenter: "ha-datacenter"  # Required for standalone ESXi [9]
+        name: "{{ vm_name }}"
+        state: poweredon
+        guest_id: "ubuntu64Guest"
+        disk:
+          - size_gb: 20
+            type: thin
+            datastore: "{{ datastore }}"
+        hardware:
+          memory_mb: 4096
+          num_cpus: 2
+          scsi: paravirtual
+        networks:
+          - name: "{{ network_name }}"
+            device_type: vmxnet3
+      delegate_to: localhost
+      register: deploy_vm
+
+    - name: Print IP Address (requires VMware Tools)
+      debug:
+        msg: "VM Created. IP is {{ deploy_vm.instance.ipv4 | default('Waiting for Tools') }}"
